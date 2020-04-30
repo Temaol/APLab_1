@@ -2,144 +2,122 @@
  та колір набору екранних точок(не більше 4). Роздрукувати введені дані у вигляді таблиці.
  Потім згрупувати точки за кольорами і надрукувати новий список. Визначити найменьшу
  віддаль між точками кожного кольору*/
-
 #include <stdio.h>
-#define K 10
-struct coords
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#define KST_STR 50    //розмір стрічки кольору
+#define KST 30             //максимальна кількість даних які вводимо
+
+typedef struct info
 {
-    int x, y;
-}cor[K];
-struct colours
+    double x, y;
+    char color[KST_STR];
+}POINT;
+
+int kst;
+
+POINT arr[KST];
+
+//прототипи функцій
+void Input(void);
+void Output(void);
+void Sort_color(void);
+void PrintMinDistance(void);
+double Distance(POINT p1, POINT p2);
+
+int main()
 {
-    int redx, redy, greenx, greeny, blackx, blacky, goldx, goldy;
-}col[K];
 
 
-int main() {
-    int kilk, cl;
-    printf("введіть кількість координат\n");
-    scanf("%d", &kilk);
-    for(int i=0; i<kilk; i++){
-           printf("Введіть колір 1-red, 2-green, 3-black, 4-gold\n");
-          scanf("%d", &cl);
-        if (cl == 1){
-          printf("Введіть x y\n");
-         scanf("%d%d", &col[i].redx, &col[i].redy);
-            
+    puts("Введіть кількість даних які хочете ввести");
+    scanf("%d", &kst);
+    rewind(stdin);
+
+    puts("Вводіть ваші елементи");
+    Input();
+
+    puts("Bаші елементи");
+    Output();
+
+    puts("\n\n\nВідсортовані за кольором");
+    Sort_color();
+    Output();
+
+
+    PrintMinDistance();
+
+    puts("");
+   
+    return 0;
+}
+
+void Input(void)
+{
+
+    for (int i = 0; i < kst; i++)
+    {
+        puts("Введіть x");
+        scanf("%lf", &arr[i].x);
+        rewind(stdin);
+        puts("Введіть y");
+        scanf("%lf", &arr[i].y);
+        rewind(stdin);
+        puts("Введіть колір (наприклад: green)");
+        gets(arr[i].color);
+    }
+}
+
+void Output(void)
+{
+    for (int i = 0; i < kst; i++)
+    {
+        printf("\n%2d)%-20s x = %.3lf\ty = %.3lf", i + 1, arr[i].color, arr[i].x, arr[i].y);
+    }
+}
+
+void Sort_color(void)
+{
+    POINT temp;
+    for(int i=0; i<kst;i++)
+        for(int j=0; j<kst-i-1;j++)
+            if (strcmp(arr[j].color, arr[j + 1].color) > 0) {
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
             }
-         if (cl == 2){
-                 printf("Введіть x y\n");
-                scanf("%d%d", &col[i].greenx, &col[i].greeny);
-           }
-         if (cl == 3){
-                 printf("Введіть x y\n");
-                scanf("%d%d", &col[i].blackx, &col[i].blacky);
-           }
-         if (cl == 4){
-                 printf("Введіть x y\n");
-                scanf("%d%d", &col[i].goldx, &col[i].goldy);
-            
-           }
+}
+
+void PrintMinDistance(void)
+{
+    POINT p1, p2;
+
+
+    for (int i = 0; i < kst; i++)
+    {
+        if (strcmp(arr[i].color, arr[i + 1].color) != 0)
+            continue;
+        p1 = arr[i];
+        p2 = arr[i+1];
+
+
+        double MinDistance = Distance(p1, p2);
+
+
+        for (; i < kst && strcmp(arr[i].color, arr[i + 1].color) == 0; i++)
+            for (int j = 0; j < kst - i - 1; j++)
+                if (MinDistance > Distance(arr[j], arr[j + 1])) {
+                    p1 = arr[j];
+                    p2 = arr[j + 1];
+                }
+
+        printf("\n\n\n%-15s %.3lf\t%.3lf", p1.color, p1.x, p1.y);
+        printf("\n%-15s %.3lf\t%.3lf", p2.color, p2.x, p2.y);
     }
-    for(int i=0; i<kilk; i++){
-        if(col[i].redx != 0){
-           printf("%d\t%d\n",col[i].redx, col[i].redy );
-        }
-        if(col[i].greenx != 0){
-           printf("%d\t%d\n",col[i].greenx, col[i].greeny );
-        }
-           if(col[i].blackx != 0){
-           printf("%d\t%d\n",col[i].blackx, col[i].blacky );
-           }
-                  if(col[i].goldx != 0){
-           printf("%d\t%d\n",col[i].goldx, col[i].goldy );
-                  }
-    }
-    printf("\n\n\tCортування за кольорами\n");
-    for(int i=0; i<kilk; i++){
-    if(col[i].redx != 0){
-       printf("%d\t%d\n",col[i].redx, col[i].redy );
-        }
-    }
-    for(int i=0; i<kilk; i++){
-        if(col[i].greenx != 0){
-           printf("%d\t%d\n",col[i].greenx, col[i].greeny );
-        }
-    }
-    for(int i=0; i<kilk; i++){
-        if(col[i].blackx != 0){
-                  printf("%d\t%d\n",col[i].blackx, col[i].blacky );
-                  }
-    }
-    for(int i=0; i<kilk; i++){
-        if(col[i].goldx != 0){
-        printf("%d\t%d\n",col[i].goldx, col[i].goldy );
-               }
-    }
-    int wr = 10, wg = 10, wb = 10, wgo = 10, wr1, wg1, wb1, wgo1;
-    printf("Найменьша ввідстань в red\t");
-    for(int i = 0; i<kilk; i++){
-        if(col[i].redx < col[i].redy){
-            wr1 = col[i].redy - col[i].redx;
-            if(wr > wr1 && wr1 != 0){
-                wr=wr1;
-            }
-        }
-        else{
-            wr1 = col[i].redx - col[i].redy;
-            if(wr > wr1 && wr1 != 0){
-                wr=wr1;
-            }
-        }
-    }
-    printf("%d\n",wr);
-    printf("Найменьша ввідстань в green");
-    for(int i = 0; i<kilk; i++){
-         if(col[i].greenx < col[i].greeny){
-             wg1 = col[i].greeny - col[i].greenx;
-             if(wg > wg1 && wg1 != 0){
-                 wg=wg1;
-             }
-         }
-         else{
-             wg1 = col[i].greenx - col[i].greeny;
-             if(wg > wg1 && wg1 != 0){
-                 wg=wg1;
-             }
-         }
-     }
-     printf("%d\n",wg);
-    printf("Найменьша ввідстань в black");
-    for(int i = 0; i<kilk; i++){
-         if(col[i].blackx < col[i].blacky){
-             wb1 = col[i].blacky - col[i].blackx;
-             if(wb > wb1 && wb1 != 0){
-                 wb=wb1;
-             }
-         }
-         else{
-             wb1 = col[i].blackx - col[i].blacky;
-             if(wb > wb1 && wb1 != 0){
-                 wb=wb1;
-             }
-         }
-     }
-     printf("%d\n",wb);
-    printf("Найменьша ввідстань в gold");
-    for(int i = 0; i<kilk; i++){
-         if(col[i].goldx < col[i].goldy){
-             wgo1 = col[i].goldy - col[i].goldx;
-             if(wgo > wgo1 && wgo != 0){
-                 wgo=wgo1;
-             }
-         }
-         else{
-             wgo1 = col[i].goldx - col[i].goldy;
-             if(wgo > wgo1 && wgo1 != 0){
-                 wgo=wgo1;
-             }
-         }
-     }
-     printf("%d\n",wgo);
-    
+}
+
+double Distance(POINT p1, POINT p2)
+{
+    return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 }
